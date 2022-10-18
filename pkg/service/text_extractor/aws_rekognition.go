@@ -1,8 +1,6 @@
 package text_extractor
 
 import (
-	"os"
-
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/rekognition"
 )
@@ -28,7 +26,6 @@ func (a *AwsRekognition) ExtractText(inputBytes []byte) ([]string, error) {
 	if err != nil {
 		return []string{}, err
 	}
-	os.WriteFile("../../../rekognition.log", []byte(output.String()), 0644)
 
 	var textLines []string
 	for _, textDetection := range output.TextDetections {
