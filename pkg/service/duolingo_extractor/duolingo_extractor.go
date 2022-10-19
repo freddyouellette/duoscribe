@@ -1,28 +1,49 @@
 package duolingo_extractor
 
 import (
-	"errors"
 	"strings"
 
+	"github.com/freddyouellette/duolingo-text-extractor/pkg/service/language_detector"
 	"github.com/freddyouellette/duolingo-text-extractor/pkg/service/text_extractor"
 )
 
-func ExtractTranslations(service text_extractor.TextExtractorService, inputBytes []byte) ([]string, error) {
-	lines, err := service.ExtractText(inputBytes)
+func ExtractTranslations(
+	textExtractorService text_extractor.TextExtractorService,
+	languageDetectionService language_detector.LanguageDetector,
+	inputBytes []byte,
+) (originalString string, translatedString string, err error) {
+	lines, err := textExtractorService.ExtractText(inputBytes)
 	if err != nil {
-		return []string{}, err
+		return "", "", err
 	}
 
-	var newLines []string
+	var originalLanguage string
+	var originalLines []string
+	var translatedLines []string
 	for _, line := range lines {
-		if strings.ToLower(line) != "duolingo" {
-			newLines = append(newLines, line)
+		if strings.ToLower(line) == "duolingo" {
+			// strip out the duolingo logo
+			continue
+		}
+
+		if originalLanguage == "" {
+			originalLanguage, err = languageDetectionService.DetectLanguage([]byte(line))
+			if err != nil {
+				return "", "", err
+			}
+			originalLines = append(originalLines, line)
+		} else {
+			thisLanguage, err := languageDetectionService.DetectLanguage([]byte(line))
+			if err != nil {
+				return "", "", err
+			}
+			if thisLanguage == originalLanguage {
+				originalLines = append(originalLines, line)
+			} else {
+				translatedLines = append(translatedLines, line)
+			}
 		}
 	}
 
-	if len(newLines) != 2 {
-		return []string{}, errors.New("provided image does not have 2 lines of text")
-	}
-
-	return newLines, err
+	return strings.Join(originalLines, " "), strings.Join(translatedLines, " "), err
 }

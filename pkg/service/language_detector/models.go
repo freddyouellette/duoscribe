@@ -10,8 +10,8 @@ type LanguageDetectorMock struct {
 	mock.Mock
 }
 
-func (m *LanguageDetectorMock) DetectLanguage(inputBytes []byte) ([]string, error) {
+func (m *LanguageDetectorMock) DetectLanguage(inputBytes []byte) (string, error) {
 	args := m.Called(inputBytes)
 
-	return args.Get(0).([]string), args.Error(1)
+	return args.Get(0).(string), args.Error(1)
 }
