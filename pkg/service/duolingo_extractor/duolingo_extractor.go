@@ -1,18 +1,39 @@
 package duolingo_extractor
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/freddyouellette/duolingo-text-extractor/pkg/service/language_detector"
 	"github.com/freddyouellette/duolingo-text-extractor/pkg/service/text_extractor"
 )
 
-func ExtractTranslations(
+type TextOrganizerService struct {
+	textExtractorService     text_extractor.TextExtractorService
+	languageDetectionService language_detector.LanguageDetector
+}
+
+type TextOrganizerOutput struct {
+	Texts []Text
+}
+
+type Text struct {
+	Language string
+	Text     string
+}
+
+func NewTextOrganizerService(
 	textExtractorService text_extractor.TextExtractorService,
 	languageDetectionService language_detector.LanguageDetector,
-	inputBytes []byte,
-) (originalString string, translatedString string, err error) {
-	lines, err := textExtractorService.ExtractText(inputBytes)
+) TextOrganizerService {
+	return TextOrganizerService{
+		textExtractorService:     textExtractorService,
+		languageDetectionService: languageDetectionService,
+	}
+}
+
+func (to *TextOrganizerService) ExtractTranslations(inputBytes []byte) (originalString string, translatedString string, err error) {
+	lines, err := to.textExtractorService.ExtractText(inputBytes)
 	if err != nil {
 		return "", "", err
 	}
@@ -27,13 +48,13 @@ func ExtractTranslations(
 		}
 
 		if originalLanguage == "" {
-			originalLanguage, err = languageDetectionService.DetectLanguage([]byte(line))
+			originalLanguage, err = to.languageDetectionService.DetectLanguage([]byte(line))
 			if err != nil {
 				return "", "", err
 			}
 			originalLines = append(originalLines, line)
 		} else {
-			thisLanguage, err := languageDetectionService.DetectLanguage([]byte(line))
+			thisLanguage, err := to.languageDetectionService.DetectLanguage([]byte(line))
 			if err != nil {
 				return "", "", err
 			}
@@ -46,4 +67,13 @@ func ExtractTranslations(
 	}
 
 	return strings.Join(originalLines, " "), strings.Join(translatedLines, " "), err
+}
+
+func (too *TextOrganizerOutput) GetLanguageText(language string) (string, error) {
+	for _, text := range too.Texts {
+		if text.Language == language {
+			return text.Text, nil
+		}
+	}
+	return "", fmt.Errorf("language \"%s\" not found", language)
 }

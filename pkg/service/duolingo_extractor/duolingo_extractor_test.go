@@ -72,7 +72,9 @@ func TestExtractTranslations(t *testing.T) {
 				languageDetectorServiceMock.On("DetectLanguage", []byte(line)).Return(test.ExtractedLanguages[i], nil)
 			}
 
-			originalString, translatedString, err := ExtractTranslations(textExtractorServiceMock, languageDetectorServiceMock, bytesGiven)
+			textOrganizerService := NewTextOrganizerService(textExtractorServiceMock, languageDetectorServiceMock)
+
+			originalString, translatedString, err := textOrganizerService.ExtractTranslations(bytesGiven)
 			assert.ErrorIs(t, err, test.expectedError)
 
 			assert.NoError(t, err)

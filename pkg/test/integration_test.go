@@ -46,11 +46,12 @@ func TestIntegration(t *testing.T) {
 		t.Run(testName, func(t *testing.T) {
 			textExtractor := new(text_extractor.AwsRekognition)
 			languageDetector := new(language_detector.AwsComprehend)
+			textOrganizer := duolingo_extractor.NewTextOrganizerService(textExtractor, languageDetector)
 
 			fileBytes, err := os.ReadFile(test.FilePath)
 			assert.NoError(t, err)
 
-			originalText, translatedText, err := duolingo_extractor.ExtractTranslations(textExtractor, languageDetector, fileBytes)
+			originalText, translatedText, err := textOrganizer.ExtractTranslations(fileBytes)
 			assert.NoError(t, err)
 			assert.Equal(t, test.OriginalText, originalText)
 			assert.Equal(t, test.TranslatedText, translatedText)
