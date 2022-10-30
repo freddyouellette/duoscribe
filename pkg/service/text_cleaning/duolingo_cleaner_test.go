@@ -1,10 +1,10 @@
-package duolingo_extractor
+package text_cleaning
 
 import (
 	"testing"
 
-	"github.com/freddyouellette/duolingo-text-extractor/pkg/service/language_detector"
-	"github.com/freddyouellette/duolingo-text-extractor/pkg/service/text_extractor"
+	"github.com/freddyouellette/duolingo-text-extractor/pkg/service/language_detection"
+	"github.com/freddyouellette/duolingo-text-extractor/pkg/service/text_extraction"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -64,17 +64,17 @@ func TestExtractTranslations(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.Name, func(t *testing.T) {
 
-			textExtractorServiceMock := new(text_extractor.TextExtractorServiceMock)
-			textExtractorServiceMock.On("ExtractText", bytesGiven).Return(test.ExtractedLines, nil)
+			TextExtractorMock := new(text_extraction.TextExtractorMock)
+			TextExtractorMock.On("ExtractText", bytesGiven).Return(test.ExtractedLines, nil)
 
-			languageDetectorServiceMock := new(language_detector.LanguageDetectorMock)
+			languageDetectorMock := new(language_detection.LanguageDetectorMock)
 			for i, line := range test.ExtractedLines {
-				languageDetectorServiceMock.On("DetectLanguage", []byte(line)).Return(test.ExtractedLanguages[i], nil)
+				languageDetectorMock.On("DetectLanguage", []byte(line)).Return(test.ExtractedLanguages[i], nil)
 			}
 
-			textOrganizerService := NewTextOrganizerService(textExtractorServiceMock, languageDetectorServiceMock)
+			textOrganizer := NewDuolingoCleaner(TextExtractorMock, languageDetectorMock)
 
-			originalString, translatedString, err := textOrganizerService.ExtractTranslations(bytesGiven)
+			originalString, translatedString, err := textOrganizer.ExtractTranslations(bytesGiven)
 			assert.ErrorIs(t, err, test.expectedError)
 
 			assert.NoError(t, err)

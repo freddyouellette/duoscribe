@@ -1,4 +1,4 @@
-package text_extractor
+package text_extraction
 
 import (
 	"os"

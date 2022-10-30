@@ -1,4 +1,4 @@
-package language_detector
+package language_detection
 
 import "github.com/stretchr/testify/mock"
 

@@ -5,9 +5,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/freddyouellette/duolingo-text-extractor/pkg/service/duolingo_extractor"
-	"github.com/freddyouellette/duolingo-text-extractor/pkg/service/language_detector"
-	"github.com/freddyouellette/duolingo-text-extractor/pkg/service/text_extractor"
+	"github.com/freddyouellette/duolingo-text-extractor/pkg/service/language_detection"
+	"github.com/freddyouellette/duolingo-text-extractor/pkg/service/text_cleaning"
+	"github.com/freddyouellette/duolingo-text-extractor/pkg/service/text_extraction"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -44,9 +44,9 @@ func TestIntegration(t *testing.T) {
 	for i, test := range tests {
 		testName := fmt.Sprintf("Integration Test #%d (%s)", i, test.FilePath)
 		t.Run(testName, func(t *testing.T) {
-			textExtractor := new(text_extractor.AwsRekognition)
-			languageDetector := new(language_detector.AwsComprehend)
-			textOrganizer := duolingo_extractor.NewTextOrganizerService(textExtractor, languageDetector)
+			textExtractor := new(text_extraction.AwsRekognition)
+			languageDetector := new(language_detection.AwsComprehend)
+			textOrganizer := text_cleaning.NewDuolingoCleaner(textExtractor, languageDetector)
 
 			fileBytes, err := os.ReadFile(test.FilePath)
 			assert.NoError(t, err)

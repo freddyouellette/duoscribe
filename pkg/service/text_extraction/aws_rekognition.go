@@ -1,4 +1,4 @@
-package text_extractor
+package text_extraction
 
 import (
 	"github.com/aws/aws-sdk-go/aws/session"
