@@ -3,15 +3,14 @@ package output_formatting
 import (
 	"encoding/json"
 
-	"github.com/freddyouellette/duolingo-text-extractor/pkg/data"
+	"github.com/freddyouellette/duolingo-text-extractor/pkg/models"
 )
 
 type JsonOutputter struct{}
 
-func (o *JsonOutputter) Render(output data.Translation) (string, error) {
-
-	if output.Texts == nil {
-		output.Texts = make([]data.Text, 0)
+func (o *JsonOutputter) Render(output []models.Text) (string, error) {
+	if len(output) == 0 {
+		return "", nil
 	}
 
 	outputBytes, err := json.Marshal(output)

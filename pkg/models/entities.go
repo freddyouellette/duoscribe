@@ -1,8 +1,4 @@
-package data
-
-type Translation struct {
-	Texts []Text
-}
+package models
 
 type Text struct {
 	Language string

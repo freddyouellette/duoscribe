@@ -18,7 +18,7 @@ func TestRekognitionExtractFromFile(t *testing.T) {
 	tests := []RekognitionExtractFromFileTest{
 		{
 			Name:     "1 line each",
-			FilePath: "../../test/data/2_lines.jpg",
+			FilePath: "../test/data/2_lines.jpg",
 			ExpectedLines: []string{
 				"Lo può ripetere per favore?",
 				"Can you repeat it please?",
@@ -27,7 +27,7 @@ func TestRekognitionExtractFromFile(t *testing.T) {
 		},
 		{
 			Name:     "3 lines",
-			FilePath: "../../test/data/3_lines.jpg",
+			FilePath: "../test/data/3_lines.jpg",
 			ExpectedLines: []string{
 				"Non so più a chi credere.",
 				"I do not know who to",
@@ -37,7 +37,7 @@ func TestRekognitionExtractFromFile(t *testing.T) {
 		},
 		{
 			Name:     "4 lines",
-			FilePath: "../../test/data/4_lines.jpg",
+			FilePath: "../test/data/4_lines.jpg",
 			ExpectedLines: []string{
 				"Due bicchieri di succo",
 				"d'arancia, per piacere.",

@@ -1,0 +1,24 @@
+{
+	"name": "Duolingo Extractor",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	"workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+	"workspaceFolder": "/workspace",
+	"settings": {
+		"go.toolsManagement.checkForUpdates": "local",
+		"go.useLanguageServer": true,
+		"extensions.ignoreRecommendations": true
+	},
+	"mounts": [
+		{
+			"source": "${localEnv:HOME}/.aws/", 
+			"target": "/root/.aws", 
+			"type": "bind"
+		}
+	],
+	"extensions": [
+		"golang.Go",
+		"eamodio.gitlens"
+	]
+}
