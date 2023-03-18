@@ -1,6 +1,10 @@
 package extract
 
-import "github.com/freddyouellette/duolingo-text-extractor/pkg/models"
+import (
+	"fmt"
+
+	"github.com/freddyouellette/duolingo-text-extractor/pkg/models"
+)
 
 type TextExtractor interface {
 	ExtractText(inputBytes []byte) ([]string, error)
@@ -24,23 +28,31 @@ type Outputter interface {
 
 type Action struct {
 	TextExtractor    TextExtractor
-	LanguageDetector LanguageDetector
 	TextCleaner      TextCleaner
+	LanguageDetector LanguageDetector
 	TextCondenser    TextCondenser
 	Outputter        Outputter
 }
 
+const (
+	errTextExtractor    = "extracting text from image"
+	errTextCleaner      = "cleaning text"
+	errLanguageDetector = "detecting language"
+	errTextCondenser    = "condensing text"
+	errOutputter        = "outputting text"
+)
+
 func (a *Action) Extract(imageBytes []byte) error {
 	lines, err := a.TextExtractor.ExtractText(imageBytes)
 	if err != nil {
-		return err
+		return fmt.Errorf("%s: %w", errTextExtractor, err)
 	}
 
 	var texts []models.Text
 	for _, line := range lines {
 		line, err := a.TextCleaner.CleanText(line)
 		if err != nil {
-			return err
+			return fmt.Errorf("%s: %w", errTextCleaner, err)
 		}
 		if line == "" {
 			continue
@@ -48,7 +60,7 @@ func (a *Action) Extract(imageBytes []byte) error {
 
 		language, err := a.LanguageDetector.DetectLanguage([]byte(line))
 		if err != nil {
-			return err
+			return fmt.Errorf("%s: %w", errLanguageDetector, err)
 		}
 
 		texts = append(texts, models.Text{
@@ -59,10 +71,15 @@ func (a *Action) Extract(imageBytes []byte) error {
 
 	texts, err = a.TextCondenser.Condense(texts)
 	if err != nil {
-		return err
+		return fmt.Errorf("%s: %w", errTextCondenser, err)
 	}
 
-	a.Outputter.Render(texts)
+	out, err := a.Outputter.Render(texts)
+	if err != nil {
+		return fmt.Errorf("%s: %w", errOutputter, err)
+	}
+
+	fmt.Print(out)
 
 	return nil
 }
