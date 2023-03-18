@@ -5,10 +5,13 @@ import "github.com/freddyouellette/duolingo-text-extractor/pkg/models"
 type TextCondenser struct{}
 
 func (t *TextCondenser) Condense(texts []models.Text) ([]models.Text, error) {
-	var languageTexts map[string]string
+	var languageTexts map[string]string = make(map[string]string)
 	for _, text := range texts {
 		if _, ok := languageTexts[text.Language]; !ok {
 			languageTexts[text.Language] = ""
+		}
+		if len(languageTexts[text.Language]) > 0 {
+			languageTexts[text.Language] += " "
 		}
 		languageTexts[text.Language] += text.Text
 	}
