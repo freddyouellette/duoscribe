@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -23,7 +24,8 @@ func main() {
 	filePath := os.Args[len(os.Args)-1]
 	fileBytes, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		panic(err)
+		os.Stderr.WriteString(fmt.Sprintf("File %s cannot be read.", filePath))
+		os.Exit(1)
 	}
 
 	textExtractor := &text_extraction.AwsRekognition{}
@@ -47,5 +49,9 @@ func main() {
 		Outputter:        outputter,
 	}
 
-	action.Extract(fileBytes)
+	err = action.Extract(fileBytes)
+	if err != nil {
+		os.Stderr.WriteString(err.Error())
+		os.Exit(1)
+	}
 }

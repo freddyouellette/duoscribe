@@ -1,4 +1,7 @@
-test:
+build:
+	go build -v -o ./bin ./...
+
+test: build
 	go test ./...
 
 build-binary:
