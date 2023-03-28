@@ -39,7 +39,7 @@ func TestIntegration(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			cmd := exec.Command("../../bin/duolingo_extractor", test.args...)
+			cmd := exec.Command("../../bin/duoscribe", test.args...)
 
 			var out, errOut bytes.Buffer
 			cmd.Stdout = &out
