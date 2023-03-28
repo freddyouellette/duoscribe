@@ -5,16 +5,18 @@ import (
 	"github.com/aws/aws-sdk-go/service/rekognition"
 )
 
-type AwsRekognition struct{}
+type AwsRekognition struct {
+	awsSession *session.Session
+}
+
+func NewAwsRekognition(awsSession *session.Session) *AwsRekognition {
+	return &AwsRekognition{
+		awsSession: awsSession,
+	}
+}
 
 func (a *AwsRekognition) ExtractText(inputBytes []byte) ([]string, error) {
-	// convert to base64 byte string
-
-	session := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	}))
-
-	service := rekognition.New(session)
+	service := rekognition.New(a.awsSession)
 
 	input := &rekognition.DetectTextInput{
 		Image: &rekognition.Image{

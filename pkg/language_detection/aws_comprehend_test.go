@@ -3,6 +3,7 @@ package language_detection
 import (
 	"testing"
 
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -37,8 +38,16 @@ func TestLanguageDetector(t *testing.T) {
 	}
 
 	for _, test := range tests {
+		awsSession, err := session.NewSessionWithOptions(session.Options{
+			SharedConfigState: session.SharedConfigEnable,
+		})
+		if err != nil {
+			panic(err)
+		}
+
+		languageDetector := NewAwsComprehend(awsSession)
+
 		t.Run(test.name, func(t *testing.T) {
-			languageDetector := &AwsComprehend{}
 			detectedLanguage, err := languageDetector.DetectLanguage([]byte(test.inputString))
 			assert.NoError(t, err)
 			assert.Equal(t, test.expectedLanguage, detectedLanguage)

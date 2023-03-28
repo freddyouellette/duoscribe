@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -50,7 +51,14 @@ func TestRekognitionExtractFromFile(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.Name, func(t *testing.T) {
-			textExtractor := new(AwsRekognition)
+			awsSession, err := session.NewSessionWithOptions(session.Options{
+				SharedConfigState: session.SharedConfigEnable,
+			})
+			if err != nil {
+				panic(err)
+			}
+
+			textExtractor := NewAwsRekognition(awsSession)
 
 			data, err := os.ReadFile(test.FilePath)
 			assert.NoError(t, err)

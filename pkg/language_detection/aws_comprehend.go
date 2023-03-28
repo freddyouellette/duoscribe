@@ -5,15 +5,18 @@ import (
 	"github.com/aws/aws-sdk-go/service/comprehend"
 )
 
-type AwsComprehend struct{}
+type AwsComprehend struct {
+	awsSession *session.Session
+}
+
+func NewAwsComprehend(awsSession *session.Session) *AwsComprehend {
+	return &AwsComprehend{
+		awsSession: awsSession,
+	}
+}
 
 func (s *AwsComprehend) DetectLanguage(inputBytes []byte) (string, error) {
-
-	session := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	}))
-
-	service := comprehend.New(session)
+	service := comprehend.New(s.awsSession)
 
 	inputString := string(inputBytes)
 	input := &comprehend.DetectDominantLanguageInput{

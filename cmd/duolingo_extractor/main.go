@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/freddyouellette/duolingo-text-extractor/pkg/actions/extract"
 	"github.com/freddyouellette/duolingo-text-extractor/pkg/language_detection"
 	"github.com/freddyouellette/duolingo-text-extractor/pkg/output_formatting"
@@ -28,8 +29,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	textExtractor := &text_extraction.AwsRekognition{}
-	languageDetector := &language_detection.AwsComprehend{}
+	awsSession, err := session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable,
+	})
+	if err != nil {
+		os.Stderr.WriteString(fmt.Sprintf(
+			"AWS session failed to start. Please check your settings, an AWS environment is required to use this tool: %s",
+			err.Error(),
+		))
+		os.Exit(1)
+	}
+
+	textExtractor := text_extraction.NewAwsRekognition(awsSession)
+	languageDetector := language_detection.NewAwsComprehend(awsSession)
 	textCleaner := &text_cleaning.TextCleaner{}
 	textCondenser := &text_condensing.TextCondenser{}
 
