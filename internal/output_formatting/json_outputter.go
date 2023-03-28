@@ -3,7 +3,7 @@ package output_formatting
 import (
 	"encoding/json"
 
-	"github.com/freddyouellette/duolingo-text-extractor/pkg/models"
+	"github.com/freddyouellette/duolingo-text-extractor/internal/models"
 )
 
 type JsonOutputter struct{}

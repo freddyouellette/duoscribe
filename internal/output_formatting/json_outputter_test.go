@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/freddyouellette/duolingo-text-extractor/pkg/models"
+	"github.com/freddyouellette/duolingo-text-extractor/internal/models"
 	"github.com/stretchr/testify/assert"
 )
 
-type TextOutputterTest struct {
+type JsonOutputterTest struct {
 	name   string
 	input  []models.Text
 	output string
 }
 
-func TestTextOutputter(t *testing.T) {
-	tests := []TextOutputterTest{
+func TestJsonOutputter(t *testing.T) {
+	tests := []JsonOutputterTest{
 		{
 			name: "One Text",
 			input: []models.Text{
@@ -24,7 +24,7 @@ func TestTextOutputter(t *testing.T) {
 					Text:     "Quest'automobile è come nuova.",
 				},
 			},
-			output: "Quest'automobile è come nuova.\n",
+			output: "[{\"Language\":\"it\",\"Text\":\"Quest'automobile è come nuova.\"}]",
 		},
 		{
 			name: "Two Texts",
@@ -38,7 +38,7 @@ func TestTextOutputter(t *testing.T) {
 					Text:     "Quest'automobile è come nuova.",
 				},
 			},
-			output: "This car is like new.\nQuest'automobile è come nuova.\n",
+			output: "[{\"Language\":\"en\",\"Text\":\"This car is like new.\"},{\"Language\":\"it\",\"Text\":\"Quest'automobile è come nuova.\"}]",
 		},
 		{
 			name:   "Nil Texts",
@@ -52,11 +52,11 @@ func TestTextOutputter(t *testing.T) {
 		},
 	}
 
-	TextOutputter := new(TextOutputter)
+	jsonOutputter := new(JsonOutputter)
 
 	for i, test := range tests {
-		t.Run(fmt.Sprintf("Text Outputter Test %d: %s", i, test.name), func(t *testing.T) {
-			thisOutput, err := TextOutputter.Render(test.input)
+		t.Run(fmt.Sprintf("JSON Outputter Test %d: %s", i, test.name), func(t *testing.T) {
+			thisOutput, err := jsonOutputter.Render(test.input)
 			assert.NoError(t, err)
 			assert.Equal(t, test.output, thisOutput)
 		})

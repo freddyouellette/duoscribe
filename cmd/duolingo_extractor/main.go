@@ -6,11 +6,11 @@ import (
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/freddyouellette/duolingo-text-extractor/pkg/actions/extract"
+	"github.com/freddyouellette/duolingo-text-extractor/internal/actions/extract"
+	"github.com/freddyouellette/duolingo-text-extractor/internal/output_formatting"
+	"github.com/freddyouellette/duolingo-text-extractor/internal/text_cleaning"
+	"github.com/freddyouellette/duolingo-text-extractor/internal/text_condensing"
 	"github.com/freddyouellette/duolingo-text-extractor/pkg/language_detection"
-	"github.com/freddyouellette/duolingo-text-extractor/pkg/output_formatting"
-	"github.com/freddyouellette/duolingo-text-extractor/pkg/text_cleaning"
-	"github.com/freddyouellette/duolingo-text-extractor/pkg/text_condensing"
 	"github.com/freddyouellette/duolingo-text-extractor/pkg/text_extraction"
 )
 

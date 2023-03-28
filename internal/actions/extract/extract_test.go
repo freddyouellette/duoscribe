@@ -3,7 +3,7 @@ package extract
 import (
 	"testing"
 
-	"github.com/freddyouellette/duolingo-text-extractor/pkg/models"
+	"github.com/freddyouellette/duolingo-text-extractor/internal/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )

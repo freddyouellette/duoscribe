@@ -3,7 +3,7 @@ package extract
 import (
 	"fmt"
 
-	"github.com/freddyouellette/duolingo-text-extractor/pkg/models"
+	"github.com/freddyouellette/duolingo-text-extractor/internal/models"
 )
 
 type TextExtractor interface {

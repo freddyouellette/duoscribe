@@ -1,6 +1,6 @@
 package text_condensing
 
-import "github.com/freddyouellette/duolingo-text-extractor/pkg/models"
+import "github.com/freddyouellette/duolingo-text-extractor/internal/models"
 
 type TextCondenser struct{}
 

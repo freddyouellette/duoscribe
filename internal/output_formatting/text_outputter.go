@@ -3,7 +3,7 @@ package output_formatting
 import (
 	"fmt"
 
-	"github.com/freddyouellette/duolingo-text-extractor/pkg/models"
+	"github.com/freddyouellette/duolingo-text-extractor/internal/models"
 )
 
 type TextOutputter struct{}

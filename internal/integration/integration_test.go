@@ -19,20 +19,20 @@ func TestIntegration(t *testing.T) {
 	tests := []textCleaningTest{
 		{
 			name:           "Happy Path With 4 lines",
-			args:           []string{"testdata/integration.png"},
+			args:           []string{"../../test/integration.png"},
 			expectedError:  "",
 			expectedOutput: "Quest'automobile è come nuova.\nThis automobile is like new.\n",
 		},
 		{
 			name:           "Happy Path With 4 lines - JSON",
-			args:           []string{"--json", "testdata/integration.png"},
+			args:           []string{"--json", "../../test/integration.png"},
 			expectedError:  "",
 			expectedOutput: "[{\"Language\":\"it\",\"Text\":\"Quest'automobile è come nuova.\"},{\"Language\":\"en\",\"Text\":\"This automobile is like new.\"}]",
 		},
 		{
 			name:           "Invalid Path",
-			args:           []string{"testdata/invalid_path.png"},
-			expectedError:  "File testdata/invalid_path.png cannot be read.",
+			args:           []string{"../../test/invalid_path.png"},
+			expectedError:  "File ../../test/invalid_path.png cannot be read.",
 			expectedOutput: "",
 		},
 	}
