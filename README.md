@@ -16,7 +16,7 @@ Can you repeat it please?
 		"language": "it"
 	},
 	{
-		"text": "Lo può ripetere per favore?",
+		"text": "Can you repeat it please?",
 		"language": "en"
 	}
 ]
