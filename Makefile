@@ -3,3 +3,9 @@ build:
 
 test: build
 	go test ./...
+
+format:
+	go fmt ./...
+
+lint:
+	golangci-lint run

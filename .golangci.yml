@@ -1,0 +1,23 @@
+linters:
+  disable-all: true
+  enable:
+    - revive # generic linter for Go
+    - errcheck # errcheck is a program for checking for unchecked errors in Go code. These unchecked errors can be critical bugs in some cases
+    - gosimple # Linter for Go source code that specializes in simplifying code
+    - govet # Vet examines Go source code and reports suspicious constructs, such as Printf calls whose arguments do not align with the format string
+    - ineffassign # Detects when assignments to existing variables are not used
+    - staticcheck # Using static analysis, it finds bugs and performance issues, offers simplifications, and enforces style rules.
+    - typecheck # Like the front-end of a Go compiler, parses and type-checks Go code
+    - unused # Checks Go code for unused constants, variables, functions and types
+    - godox # Tool for detection of FIXME, TODO and other comment keywords
+    - gocyclo # Cyclomatic complexity is a code quality metric which can be used to identify code that needs refactoring. It measures the number of linearly independent paths through a function's source code.
+
+issues:
+  include:
+    - EXC0012 # revive - exported (.+) should have comment( \(or a comment on this block\))? or be unexported
+    - EXC0014 # revive - comment on exported (.+) should be of the form "(.+)..."
+  exclude:
+    - "var-naming: don't use an underscore in package name"
+    - "exported: exported function New.+ should have comment or be unexported"
+    - "var-naming: var .*(?i)json(?-i).* should be .*(?i)json(?-i).*"
+    - "var-naming: type .*(?i)json(?-i).* should be .*(?i)json(?-i).*"
