@@ -5,6 +5,8 @@ RUN apk add --no-cache \
 	git \
 	make
 
+RUN wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.52.2
+
 RUN go install github.com/cweill/gotests/gotests@v1.6.0 \
 	&& go install github.com/fatih/gomodifytags@v1.16.0 \
 	&& go install github.com/josharian/impl@v1.1.0 \
