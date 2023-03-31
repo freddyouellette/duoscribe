@@ -5,6 +5,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/rekognition"
 )
 
+// AwsRekognition can extract text from an image using an AWS service.
 type AwsRekognition struct {
 	awsSession *session.Session
 }
@@ -15,6 +16,7 @@ func NewAwsRekognition(awsSession *session.Session) *AwsRekognition {
 	}
 }
 
+// ExtractText will return an array of strings that was extracted from the image given.
 func (a *AwsRekognition) ExtractText(inputBytes []byte) ([]string, error) {
 	service := rekognition.New(a.awsSession)
 

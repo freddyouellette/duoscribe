@@ -42,15 +42,14 @@ func main() {
 
 	textExtractor := text_extraction.NewAwsRekognition(awsSession)
 	languageDetector := language_detection.NewAwsComprehend(awsSession)
-	textCleaner := &text_cleaning.TextCleaner{}
-	textCondenser := &text_condensing.TextCondenser{}
+	textCleaner := text_cleaning.NewTextCleaner()
+	textCondenser := text_condensing.NewTextCondenser()
 
 	var outputter extract.Outputter
 	if wantJson {
 		outputter = &output_formatting.JsonOutputter{}
 	} else {
 		outputter = &output_formatting.TextOutputter{}
-
 	}
 
 	action := extract.Action{

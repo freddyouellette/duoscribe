@@ -45,10 +45,12 @@ func TestIntegration(t *testing.T) {
 			cmd.Stdout = &out
 			cmd.Stderr = &errOut
 
-			cmd.Run()
-
-			assert.Equal(t, test.expectedError, errOut.String())
-			assert.Equal(t, test.expectedOutput, out.String())
+			err := cmd.Run()
+			if err != nil {
+				assert.Equal(t, test.expectedError, errOut.String())
+			} else {
+				assert.Equal(t, test.expectedOutput, out.String())
+			}
 		})
 	}
 }

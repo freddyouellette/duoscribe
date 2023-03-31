@@ -5,6 +5,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/comprehend"
 )
 
+// AwsComprehend can detect the language of a string using an AWS service.
 type AwsComprehend struct {
 	awsSession *session.Session
 }
@@ -15,6 +16,8 @@ func NewAwsComprehend(awsSession *session.Session) *AwsComprehend {
 	}
 }
 
+// DetectLanguage will determine the language of a string and return it.
+// The language will be in short form, e.g. "en", "it", "es"
 func (s *AwsComprehend) DetectLanguage(inputBytes []byte) (string, error) {
 	service := comprehend.New(s.awsSession)
 
@@ -24,7 +27,6 @@ func (s *AwsComprehend) DetectLanguage(inputBytes []byte) (string, error) {
 	}
 
 	output, err := service.DetectDominantLanguage(input)
-
 	if err != nil {
 		return "", err
 	}

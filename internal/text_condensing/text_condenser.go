@@ -2,10 +2,17 @@ package text_condensing
 
 import "github.com/freddyouellette/duolingo-text-extractor/internal/models"
 
+// TextCondenser condenses texts so that each language only has one string.
 type TextCondenser struct{}
 
+func NewTextCondenser() *TextCondenser {
+	return &TextCondenser{}
+}
+
+// Condense takes an array of Texts and condenses them, so that each language has only one string.
+// It will join each string with spaces.
 func (t *TextCondenser) Condense(texts []models.Text) ([]models.Text, error) {
-	var languageTexts map[string]string = make(map[string]string)
+	languageTexts := make(map[string]string)
 	for _, text := range texts {
 		if _, ok := languageTexts[text.Language]; !ok {
 			languageTexts[text.Language] = ""
