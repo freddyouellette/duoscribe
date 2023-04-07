@@ -23,7 +23,7 @@ jobs:
 
       - name: Build
         run: make build
-  s
+
       - name: Test
         run: make test
       
