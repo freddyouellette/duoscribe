@@ -11,8 +11,10 @@ on:
 
 jobs:
 
-  build:
-    runs-on: houallet/alpine-go:1.0.0
+  build-test-lint:
+    runs-on: ubuntu-latest
+    container:
+      image: houallet/alpine-go:1.0.0
     steps:
     - uses: actions/checkout@v3
 
