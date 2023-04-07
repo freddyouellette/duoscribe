@@ -19,4 +19,7 @@ format:
 lint:
 	golangci-lint run
 
-check-pipeline: build test lint
+ci-lint:
+	actionlint
+
+check-pipeline: build test lint ci-lint
