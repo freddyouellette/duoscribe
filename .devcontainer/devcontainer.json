@@ -1,8 +1,6 @@
 {
 	"name": "Duolingo Extractor",
-	"build": {
-		"dockerfile": "Dockerfile"
-	},
+	"image": "houallet/alpine-go:1.0.0",
 	"runArgs": ["--env-file",".env"],
 	"workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
 	"workspaceFolder": "/workspace",
