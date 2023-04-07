@@ -16,14 +16,16 @@ jobs:
     container:
       image: houallet/alpine-go:1.0.0
     steps:
-    - uses: actions/checkout@v3
-    - run: git config --system --add safe.directory /workspace
-
-    - name: Build
-      run: make build
-s
-    - name: Test
-      run: make test
+      - uses: actions/checkout@v3
+      - run: git config --system --add safe.directory /workspace
     
-    - name: Lint
-      run: make lint
+      - name: Setup Git
+
+      - name: Build
+        run: make build
+  s
+      - name: Test
+        run: make test
+      
+      - name: Lint
+        run: make lint
