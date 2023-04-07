@@ -3,3 +3,5 @@
 /.ignored/
 /bin/
 /.vscode
+/coverage.html
+/coverage.out

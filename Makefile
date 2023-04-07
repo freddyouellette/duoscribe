@@ -1,11 +1,22 @@
+.PHONY: *
+
 build:
 	go build -v -o ./bin ./...
 
-test: build
-	go test ./...
+utest:
+	go test `go list ./... | grep -v /integration` -coverprofile=coverage.out
+	go tool cover -html=coverage.out -o coverage.html
+	@echo Coverage report available at ./coverage.html
+
+itest:
+	go test `go list ./... | grep /integration`
+
+test: utest itest
 
 format:
 	go fmt ./...
 
 lint:
 	golangci-lint run
+
+check-pipeline: build test lint
