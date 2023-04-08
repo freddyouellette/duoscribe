@@ -12,6 +12,7 @@ on:
 jobs:
 
   build-test-lint:
+    environment: MR
     runs-on: ubuntu-latest
     container:
       image: houallet/alpine-go:1.1.0
@@ -24,6 +25,9 @@ jobs:
 
       - name: Unit Tests
         run: make utest
+      
+      - name: Integration Tests
+        run: make itest
       
       - name: Lint
         run: make lint
