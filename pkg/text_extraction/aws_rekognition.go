@@ -1,34 +1,40 @@
 package text_extraction
 
 import (
-	"github.com/aws/aws-sdk-go/aws/session"
+	"errors"
+	"fmt"
+
 	"github.com/aws/aws-sdk-go/service/rekognition"
 )
 
-// AwsRekognition can extract text from an image using an AWS service.
-type AwsRekognition struct {
-	awsSession *session.Session
+type AwsRekognitionService interface {
+	DetectText(input *rekognition.DetectTextInput) (*rekognition.DetectTextOutput, error)
 }
 
-func NewAwsRekognition(awsSession *session.Session) *AwsRekognition {
+// AwsRekognition can extract text from an image using an AWS service.
+type AwsRekognition struct {
+	awsRekognitionService AwsRekognitionService
+}
+
+func NewAwsRekognition(awsRekognitionService AwsRekognitionService) *AwsRekognition {
 	return &AwsRekognition{
-		awsSession: awsSession,
+		awsRekognitionService: awsRekognitionService,
 	}
 }
 
+var errAwsRekognitionFailure = errors.New("aws rekognition failure")
+
 // ExtractText will return an array of strings that was extracted from the image given.
 func (a *AwsRekognition) ExtractText(inputBytes []byte) ([]string, error) {
-	service := rekognition.New(a.awsSession)
-
 	input := &rekognition.DetectTextInput{
 		Image: &rekognition.Image{
 			Bytes: inputBytes,
 		},
 	}
 
-	output, err := service.DetectText(input)
+	output, err := a.awsRekognitionService.DetectText(input)
 	if err != nil {
-		return []string{}, err
+		return []string{}, fmt.Errorf("%w: %s", errAwsRekognitionFailure, err)
 	}
 
 	var textLines []string

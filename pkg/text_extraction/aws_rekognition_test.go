@@ -1,72 +1,99 @@
 package text_extraction
 
 import (
-	"os"
+	"errors"
 	"strings"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/rekognition"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
-type RekognitionExtractFromFileTest struct {
-	Name          string
-	FilePath      string
-	ExpectedLines []string
+type AwsRekognitionServiceMock struct {
+	mock.Mock
+}
+
+func (m *AwsRekognitionServiceMock) DetectText(input *rekognition.DetectTextInput) (*rekognition.DetectTextOutput, error) {
+	args := m.MethodCalled("DetectText", input)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	} else {
+		return args.Get(0).(*rekognition.DetectTextOutput), args.Error(1)
+	}
+}
+
+type rekognitionExtractFromFileTest struct {
+	Name                         string
+	AwsRekognitionServiceFactory func() *AwsRekognitionServiceMock
+	FilePath                     string
+	ExpectedOutput               []string
+	ExpectedError                error
 }
 
 func TestRekognitionExtractFromFile(t *testing.T) {
-	tests := []RekognitionExtractFromFileTest{
-		{
-			Name:     "1 line each",
-			FilePath: "../../test/2_lines.jpg",
-			ExpectedLines: []string{
-				"Lo può ripetere per favore?",
-				"Can you repeat it please?",
-				"duolingo",
+	var (
+		okImageBytes       = []byte("ok-image-bytes")
+		okRekognitionInput = &rekognition.DetectTextInput{
+			Image: &rekognition.Image{
+				Bytes: okImageBytes,
 			},
+		}
+		okText1    = "ok-test-1"
+		okText2    = "ok-test-2"
+		okText3    = "ok-test-3"
+		okTextType = rekognition.TextTypesLine
+	)
+
+	tests := []rekognitionExtractFromFileTest{
+		{
+			Name: "Happy Path",
+			AwsRekognitionServiceFactory: func() *AwsRekognitionServiceMock {
+				m := new(AwsRekognitionServiceMock)
+				output := &rekognition.DetectTextOutput{
+					TextDetections: []*rekognition.TextDetection{
+						{
+							DetectedText: &okText1,
+							Type:         &okTextType,
+						},
+						{
+							DetectedText: &okText2,
+							Type:         &okTextType,
+						},
+						{
+							DetectedText: &okText3,
+							Type:         &okTextType,
+						},
+					},
+				}
+				m.On("DetectText", okRekognitionInput).Once().Return(output, nil)
+				return m
+			},
+			FilePath:       "../../test/2_lines.jpg",
+			ExpectedOutput: []string{okText1, okText2, okText3},
+			ExpectedError:  nil,
 		},
 		{
-			Name:     "3 lines",
-			FilePath: "../../test/3_lines.jpg",
-			ExpectedLines: []string{
-				"Non so più a chi credere.",
-				"I do not know who to",
-				"believe anymore.",
-				"duolingo",
+			Name: "AWS Failure",
+			AwsRekognitionServiceFactory: func() *AwsRekognitionServiceMock {
+				m := new(AwsRekognitionServiceMock)
+				m.On("DetectText", okRekognitionInput).Once().Return(nil, errors.New("aws failure"))
+				return m
 			},
-		},
-		{
-			Name:     "4 lines",
-			FilePath: "../../test/4_lines.jpg",
-			ExpectedLines: []string{
-				"Due bicchieri di succo",
-				"d'arancia, per piacere.",
-				"Two glasses of orange",
-				"juice, please.",
-				"duolingo",
-			},
+			FilePath:       "../../test/2_lines.jpg",
+			ExpectedOutput: nil,
+			ExpectedError:  errAwsRekognitionFailure,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.Name, func(t *testing.T) {
-			awsSession, err := session.NewSessionWithOptions(session.Options{
-				SharedConfigState: session.SharedConfigEnable,
-			})
-			if err != nil {
-				panic(err)
-			}
+			textExtractor := NewAwsRekognition(test.AwsRekognitionServiceFactory())
 
-			textExtractor := NewAwsRekognition(awsSession)
+			extractedLines, err := textExtractor.ExtractText(okImageBytes)
+			assert.ErrorIs(t, err, test.ExpectedError)
 
-			data, err := os.ReadFile(test.FilePath)
-			assert.NoError(t, err)
-
-			extractedLines, err := textExtractor.ExtractText(data)
-			assert.NoError(t, err)
-
-			expectedJoined := strings.Join(test.ExpectedLines, " / ")
+			expectedJoined := strings.Join(test.ExpectedOutput, " / ")
 			extractedJoined := strings.Join(extractedLines, " / ")
 			assert.Equal(t, expectedJoined, extractedJoined)
 		})
