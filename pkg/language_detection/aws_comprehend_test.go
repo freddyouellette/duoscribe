@@ -1,10 +1,12 @@
 package language_detection
 
 import (
+	"context"
 	"errors"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/service/comprehend"
+	"github.com/aws/aws-sdk-go-v2/service/comprehend"
+	"github.com/aws/aws-sdk-go-v2/service/comprehend/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -13,10 +15,8 @@ type AwsComprehendServiceMock struct {
 	mock.Mock
 }
 
-func (m *AwsComprehendServiceMock) DetectDominantLanguage(
-	input *comprehend.DetectDominantLanguageInput,
-) (*comprehend.DetectDominantLanguageOutput, error) {
-	args := m.MethodCalled("DetectDominantLanguage", input)
+func (m *AwsComprehendServiceMock) DetectDominantLanguage(ctx context.Context, params *comprehend.DetectDominantLanguageInput, optFns ...func(*comprehend.Options)) (*comprehend.DetectDominantLanguageOutput, error) {
+	args := m.MethodCalled("DetectDominantLanguage", ctx, params)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -45,11 +45,11 @@ func TestLanguageDetector(t *testing.T) {
 			awsComprehendServiceFactory: func() *AwsComprehendServiceMock {
 				m := new(AwsComprehendServiceMock)
 				output := &comprehend.DetectDominantLanguageOutput{
-					Languages: []*comprehend.DominantLanguage{
+					Languages: []types.DominantLanguage{
 						{LanguageCode: &okOutput},
 					},
 				}
-				m.On("DetectDominantLanguage", okComprehendInput).Once().Return(output, nil)
+				m.On("DetectDominantLanguage", mock.Anything, okComprehendInput).Once().Return(output, nil)
 				return m
 			},
 			inputString:    okInput,
@@ -60,7 +60,7 @@ func TestLanguageDetector(t *testing.T) {
 			name: "AWS Failure",
 			awsComprehendServiceFactory: func() *AwsComprehendServiceMock {
 				m := new(AwsComprehendServiceMock)
-				m.On("DetectDominantLanguage", okComprehendInput).Once().Return(nil, errors.New("aws failure"))
+				m.On("DetectDominantLanguage", mock.Anything, okComprehendInput).Once().Return(nil, errors.New("aws failure"))
 				return m
 			},
 			inputString:    okInput,
