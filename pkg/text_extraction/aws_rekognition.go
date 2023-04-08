@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/rekognition"
 )
 
+// AwsRekognitionService will call an AWS service to extract text from and image
 type AwsRekognitionService interface {
 	DetectText(input *rekognition.DetectTextInput) (*rekognition.DetectTextOutput, error)
 }

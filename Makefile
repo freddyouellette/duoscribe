@@ -1,7 +1,7 @@
 .PHONY: *
 
 build:
-	go build -v -o ./bin ./...
+	mkdir -p ./bin && go build -v -o ./bin ./...
 
 utest:
 	go test `go list ./... | grep -v /integration` -coverprofile=coverage.out
@@ -19,4 +19,7 @@ format:
 lint:
 	golangci-lint run
 
-check-pipeline: build test lint
+ci-lint:
+	actionlint
+
+check-pipeline: build test lint ci-lint

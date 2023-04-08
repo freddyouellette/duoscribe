@@ -18,9 +18,8 @@ func (m *AwsRekognitionServiceMock) DetectText(input *rekognition.DetectTextInpu
 	args := m.MethodCalled("DetectText", input)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
-	} else {
-		return args.Get(0).(*rekognition.DetectTextOutput), args.Error(1)
 	}
+	return args.Get(0).(*rekognition.DetectTextOutput), args.Error(1)
 }
 
 type rekognitionExtractFromFileTest struct {
