@@ -19,9 +19,8 @@ func (m *AwsComprehendServiceMock) DetectDominantLanguage(
 	args := m.MethodCalled("DetectDominantLanguage", input)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
-	} else {
-		return args.Get(0).(*comprehend.DetectDominantLanguageOutput), args.Error(1)
 	}
+	return args.Get(0).(*comprehend.DetectDominantLanguageOutput), args.Error(1)
 }
 
 type languageDetectorTest struct {

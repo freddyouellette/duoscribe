@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/comprehend"
 )
 
+// AwsComprehendService will call the AWS service to detect the language of a string.
 type AwsComprehendService interface {
 	DetectDominantLanguage(input *comprehend.DetectDominantLanguageInput) (*comprehend.DetectDominantLanguageOutput, error)
 }
