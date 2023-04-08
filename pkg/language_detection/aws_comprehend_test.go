@@ -16,7 +16,7 @@ type AwsComprehendServiceMock struct {
 }
 
 func (m *AwsComprehendServiceMock) DetectDominantLanguage(ctx context.Context, params *comprehend.DetectDominantLanguageInput, optFns ...func(*comprehend.Options)) (*comprehend.DetectDominantLanguageOutput, error) {
-	args := m.MethodCalled("DetectDominantLanguage", ctx, params)
+	args := m.MethodCalled("DetectDominantLanguage", ctx, params, optFns)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -49,7 +49,7 @@ func TestLanguageDetector(t *testing.T) {
 						{LanguageCode: &okOutput},
 					},
 				}
-				m.On("DetectDominantLanguage", mock.Anything, okComprehendInput).Once().Return(output, nil)
+				m.On("DetectDominantLanguage", mock.Anything, okComprehendInput, mock.Anything).Once().Return(output, nil)
 				return m
 			},
 			inputString:    okInput,
@@ -60,7 +60,7 @@ func TestLanguageDetector(t *testing.T) {
 			name: "AWS Failure",
 			awsComprehendServiceFactory: func() *AwsComprehendServiceMock {
 				m := new(AwsComprehendServiceMock)
-				m.On("DetectDominantLanguage", mock.Anything, okComprehendInput).Once().Return(nil, errors.New("aws failure"))
+				m.On("DetectDominantLanguage", mock.Anything, okComprehendInput, mock.Anything).Once().Return(nil, errors.New("aws failure"))
 				return m
 			},
 			inputString:    okInput,

@@ -17,7 +17,7 @@ type AwsRekognitionServiceMock struct {
 }
 
 func (m *AwsRekognitionServiceMock) DetectText(ctx context.Context, params *rekognition.DetectTextInput, optFns ...func(*rekognition.Options)) (*rekognition.DetectTextOutput, error) {
-	args := m.MethodCalled("DetectText", ctx, params)
+	args := m.MethodCalled("DetectText", ctx, params, optFns)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -67,7 +67,7 @@ func TestRekognitionExtractFromFile(t *testing.T) {
 						},
 					},
 				}
-				m.On("DetectText", mock.Anything, okRekognitionInput).Once().Return(output, nil)
+				m.On("DetectText", mock.Anything, okRekognitionInput, mock.Anything).Once().Return(output, nil)
 				return m
 			},
 			FilePath:       "../../test/2_lines.jpg",
@@ -78,7 +78,7 @@ func TestRekognitionExtractFromFile(t *testing.T) {
 			Name: "AWS Failure",
 			AwsRekognitionServiceFactory: func() *AwsRekognitionServiceMock {
 				m := new(AwsRekognitionServiceMock)
-				m.On("DetectText", mock.Anything, okRekognitionInput).Once().Return(nil, errors.New("aws failure"))
+				m.On("DetectText", mock.Anything, okRekognitionInput, mock.Anything).Once().Return(nil, errors.New("aws failure"))
 				return m
 			},
 			FilePath:       "../../test/2_lines.jpg",
