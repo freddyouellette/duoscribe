@@ -1,34 +1,40 @@
 package language_detection
 
 import (
-	"github.com/aws/aws-sdk-go/aws/session"
+	"errors"
+	"fmt"
+
 	"github.com/aws/aws-sdk-go/service/comprehend"
 )
 
-// AwsComprehend can detect the language of a string using an AWS service.
-type AwsComprehend struct {
-	awsSession *session.Session
+type AwsComprehendService interface {
+	DetectDominantLanguage(input *comprehend.DetectDominantLanguageInput) (*comprehend.DetectDominantLanguageOutput, error)
 }
 
-func NewAwsComprehend(awsSession *session.Session) *AwsComprehend {
+// AwsComprehend can detect the language of a string using an AWS service.
+type AwsComprehend struct {
+	awsComprehendService AwsComprehendService
+}
+
+func NewAwsComprehend(awsComprehendService AwsComprehendService) *AwsComprehend {
 	return &AwsComprehend{
-		awsSession: awsSession,
+		awsComprehendService: awsComprehendService,
 	}
 }
+
+var errAwsComprehendFailure = errors.New("aws comprehend failure")
 
 // DetectLanguage will determine the language of a string and return it.
 // The language will be in short form, e.g. "en", "it", "es"
 func (s *AwsComprehend) DetectLanguage(inputBytes []byte) (string, error) {
-	service := comprehend.New(s.awsSession)
-
 	inputString := string(inputBytes)
 	input := &comprehend.DetectDominantLanguageInput{
 		Text: &inputString,
 	}
 
-	output, err := service.DetectDominantLanguage(input)
+	output, err := s.awsComprehendService.DetectDominantLanguage(input)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("%w: %s", errAwsComprehendFailure, err)
 	}
 
 	return *output.Languages[0].LanguageCode, nil

@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/comprehend"
 	"github.com/aws/aws-sdk-go/service/rekognition"
 	"github.com/freddyouellette/duolingo-text-extractor/internal/actions/extract"
 	"github.com/freddyouellette/duolingo-text-extractor/internal/output_formatting"
@@ -41,9 +42,10 @@ func main() {
 		os.Exit(1)
 	}
 	awsRekognitionService := rekognition.New(awsSession)
+	awsComprehendService := comprehend.New(awsSession)
 
 	textExtractor := text_extraction.NewAwsRekognition(awsRekognitionService)
-	languageDetector := language_detection.NewAwsComprehend(awsSession)
+	languageDetector := language_detection.NewAwsComprehend(awsComprehendService)
 	textCleaner := text_cleaning.NewTextCleaner()
 	textCondenser := text_condensing.NewTextCondenser()
 
