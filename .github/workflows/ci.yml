@@ -12,22 +12,29 @@ on:
 jobs:
 
   build-test-lint:
-    environment: MR
     runs-on: ubuntu-latest
     container:
       image: houallet/alpine-go:1.1.0
     steps:
       - uses: actions/checkout@v3
       - run: git config --global --add safe.directory /__w/duoscribe/duoscribe
-    
+      
       - name: Build
         run: make build
-
+        
       - name: Unit Tests
         run: make utest
-      
-      - name: Integration Tests
-        run: make itest
-      
+        
       - name: Lint
         run: make lint
+
+  integration-tests:
+    environment: MR
+    runs-on: ubuntu-latest
+    container:
+      image: houallet/alpine-go:1.0.0
+    steps:
+      - uses: actions/checkout@v3
+      - run: git config --global --add safe.directory /__w/duoscribe/duoscribe
+      - name: Integration Tests
+        run: make itest
