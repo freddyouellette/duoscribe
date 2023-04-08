@@ -1,15 +1,16 @@
 package language_detection
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go/service/comprehend"
+	"github.com/aws/aws-sdk-go-v2/service/comprehend"
 )
 
 // AwsComprehendService will call the AWS service to detect the language of a string.
 type AwsComprehendService interface {
-	DetectDominantLanguage(input *comprehend.DetectDominantLanguageInput) (*comprehend.DetectDominantLanguageOutput, error)
+	DetectDominantLanguage(ctx context.Context, params *comprehend.DetectDominantLanguageInput, optFns ...func(*comprehend.Options)) (*comprehend.DetectDominantLanguageOutput, error)
 }
 
 // AwsComprehend can detect the language of a string using an AWS service.
@@ -33,7 +34,7 @@ func (s *AwsComprehend) DetectLanguage(inputBytes []byte) (string, error) {
 		Text: &inputString,
 	}
 
-	output, err := s.awsComprehendService.DetectDominantLanguage(input)
+	output, err := s.awsComprehendService.DetectDominantLanguage(context.Background(), input)
 	if err != nil {
 		return "", fmt.Errorf("%w: %s", errAwsComprehendFailure, err)
 	}

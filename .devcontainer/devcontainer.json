@@ -1,6 +1,6 @@
 {
 	"name": "Duolingo Extractor",
-	"image": "houallet/alpine-go:1.0.0",
+	"image": "houallet/alpine-go:1.1.2",
 	"runArgs": ["--env-file",".env"],
 	"workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
 	"workspaceFolder": "/workspace",

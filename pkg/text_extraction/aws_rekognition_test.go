@@ -1,11 +1,13 @@
 package text_extraction
 
 import (
+	"context"
 	"errors"
 	"strings"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/service/rekognition"
+	"github.com/aws/aws-sdk-go-v2/service/rekognition"
+	"github.com/aws/aws-sdk-go-v2/service/rekognition/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -14,8 +16,8 @@ type AwsRekognitionServiceMock struct {
 	mock.Mock
 }
 
-func (m *AwsRekognitionServiceMock) DetectText(input *rekognition.DetectTextInput) (*rekognition.DetectTextOutput, error) {
-	args := m.MethodCalled("DetectText", input)
+func (m *AwsRekognitionServiceMock) DetectText(ctx context.Context, params *rekognition.DetectTextInput, optFns ...func(*rekognition.Options)) (*rekognition.DetectTextOutput, error) {
+	args := m.MethodCalled("DetectText", ctx, params, optFns)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -34,14 +36,14 @@ func TestRekognitionExtractFromFile(t *testing.T) {
 	var (
 		okImageBytes       = []byte("ok-image-bytes")
 		okRekognitionInput = &rekognition.DetectTextInput{
-			Image: &rekognition.Image{
+			Image: &types.Image{
 				Bytes: okImageBytes,
 			},
 		}
 		okText1    = "ok-test-1"
 		okText2    = "ok-test-2"
 		okText3    = "ok-test-3"
-		okTextType = rekognition.TextTypesLine
+		okTextType = types.TextTypesLine
 	)
 
 	tests := []rekognitionExtractFromFileTest{
@@ -50,22 +52,22 @@ func TestRekognitionExtractFromFile(t *testing.T) {
 			AwsRekognitionServiceFactory: func() *AwsRekognitionServiceMock {
 				m := new(AwsRekognitionServiceMock)
 				output := &rekognition.DetectTextOutput{
-					TextDetections: []*rekognition.TextDetection{
+					TextDetections: []types.TextDetection{
 						{
 							DetectedText: &okText1,
-							Type:         &okTextType,
+							Type:         okTextType,
 						},
 						{
 							DetectedText: &okText2,
-							Type:         &okTextType,
+							Type:         okTextType,
 						},
 						{
 							DetectedText: &okText3,
-							Type:         &okTextType,
+							Type:         okTextType,
 						},
 					},
 				}
-				m.On("DetectText", okRekognitionInput).Once().Return(output, nil)
+				m.On("DetectText", mock.Anything, okRekognitionInput, mock.Anything).Once().Return(output, nil)
 				return m
 			},
 			FilePath:       "../../test/2_lines.jpg",
@@ -76,7 +78,7 @@ func TestRekognitionExtractFromFile(t *testing.T) {
 			Name: "AWS Failure",
 			AwsRekognitionServiceFactory: func() *AwsRekognitionServiceMock {
 				m := new(AwsRekognitionServiceMock)
-				m.On("DetectText", okRekognitionInput).Once().Return(nil, errors.New("aws failure"))
+				m.On("DetectText", mock.Anything, okRekognitionInput, mock.Anything).Once().Return(nil, errors.New("aws failure"))
 				return m
 			},
 			FilePath:       "../../test/2_lines.jpg",

@@ -21,13 +21,13 @@ func TestIntegration(t *testing.T) {
 			name:           "Happy Path With 4 lines",
 			args:           []string{"../../test/integration.png"},
 			expectedError:  "",
-			expectedOutput: "Quest'automobile è come nuova.\nThis automobile is like new.\n",
+			expectedOutput: "This automobile is like new.\nQuest'automobile è come nuova.\n",
 		},
 		{
 			name:           "Happy Path With 4 lines - JSON",
 			args:           []string{"--json", "../../test/integration.png"},
 			expectedError:  "",
-			expectedOutput: "[{\"Language\":\"it\",\"Text\":\"Quest'automobile è come nuova.\"},{\"Language\":\"en\",\"Text\":\"This automobile is like new.\"}]",
+			expectedOutput: "[{\"Language\":\"en\",\"Text\":\"This automobile is like new.\"},{\"Language\":\"it\",\"Text\":\"Quest'automobile è come nuova.\"}]",
 		},
 		{
 			name:           "Invalid Path",

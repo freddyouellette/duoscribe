@@ -1,13 +1,15 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/comprehend"
-	"github.com/aws/aws-sdk-go/service/rekognition"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/comprehend"
+	"github.com/aws/aws-sdk-go-v2/service/rekognition"
 	"github.com/freddyouellette/duolingo-text-extractor/internal/actions/extract"
 	"github.com/freddyouellette/duolingo-text-extractor/internal/output_formatting"
 	"github.com/freddyouellette/duolingo-text-extractor/internal/text_cleaning"
@@ -31,18 +33,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	awsSession, err := session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	})
+	awsConfig, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
-		os.Stderr.WriteString(fmt.Sprintf(
-			"AWS session failed to start. Please check your settings, an AWS environment is required to use this tool: %s",
-			err.Error(),
-		))
-		os.Exit(1)
+		log.Fatalf("AWS session failed to start. Please check your settings, an AWS environment is required to use this tool: %s", err)
 	}
-	awsRekognitionService := rekognition.New(awsSession)
-	awsComprehendService := comprehend.New(awsSession)
+	awsRekognitionService := rekognition.NewFromConfig(awsConfig)
+	awsComprehendService := comprehend.NewFromConfig(awsConfig)
 
 	textExtractor := text_extraction.NewAwsRekognition(awsRekognitionService)
 	languageDetector := language_detection.NewAwsComprehend(awsComprehendService)
