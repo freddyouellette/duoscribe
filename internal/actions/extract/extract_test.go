@@ -1,6 +1,7 @@
 package extract
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/freddyouellette/duolingo-text-extractor/internal/models"
@@ -8,23 +9,15 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type ExtractTest struct {
-	name             string
-	inputImageBytes  []byte
-	textExtractor    func() *TextExtractorMock
-	textCleaner      func() *TextCleanerMock
-	languageDetector func() *LanguageDetectorMock
-	textCondenser    func() *TextCondenserMock
-	outputter        func() *OutputterMock
-	expectedError    error
-}
-
 type TextExtractorMock struct {
 	mock.Mock
 }
 
 func (mock *TextExtractorMock) ExtractText(inputBytes []byte) ([]string, error) {
 	args := mock.Called(inputBytes)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
 	return args.Get(0).([]string), args.Error(1)
 }
 
@@ -52,6 +45,9 @@ type TextCondenserMock struct {
 
 func (mock *TextCondenserMock) Condense(texts []models.Text) ([]models.Text, error) {
 	args := mock.Called(texts)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
 	return args.Get(0).([]models.Text), args.Error(1)
 }
 
@@ -64,6 +60,18 @@ func (mock *OutputterMock) Render(output []models.Text) (string, error) {
 	return args.String(0), args.Error(1)
 }
 
+type extractTest struct {
+	name             string
+	inputImageBytes  []byte
+	textExtractor    func() *TextExtractorMock
+	textCleaner      func() *TextCleanerMock
+	languageDetector func() *LanguageDetectorMock
+	textCondenser    func() *TextCondenserMock
+	outputter        func() *OutputterMock
+	expectedOutput   string
+	expectedError    error
+}
+
 func TestLanguageDetector(t *testing.T) {
 	testImageBytes := []byte("testImageBytes")
 	testExtractedTextLines := []string{"Test Extracted Text"}
@@ -72,36 +80,123 @@ func TestLanguageDetector(t *testing.T) {
 	testPreCondensedTexts := []models.Text{{Language: "en", Text: "Test Cleaned Text"}}
 	testCondensedTexts := []models.Text{{Language: "en", Text: "Test Condensed Text"}}
 	testOutputtedText := "Test Outputted Text"
-	tests := []ExtractTest{
+
+	okTextExtractorFactory := func() *TextExtractorMock {
+		mock := new(TextExtractorMock)
+		mock.On("ExtractText", testImageBytes).Once().Return(testExtractedTextLines, nil)
+		return mock
+	}
+	okTextCleanerFactory := func() *TextCleanerMock {
+		mock := new(TextCleanerMock)
+		mock.On("CleanText", testExtractedTextLines[0]).Once().Return(testCleanedText, nil)
+		return mock
+	}
+	okLanguageDetectorFactory := func() *LanguageDetectorMock {
+		mock := new(LanguageDetectorMock)
+		mock.On("DetectLanguage", []byte(testCleanedText)).Once().Return(testDetectedLanguage, nil)
+		return mock
+	}
+	okTextCondenserFactory := func() *TextCondenserMock {
+		mock := new(TextCondenserMock)
+		mock.On("Condense", testPreCondensedTexts).Once().Return(testCondensedTexts, nil)
+		return mock
+	}
+	okOutputterFactory := func() *OutputterMock {
+		mock := new(OutputterMock)
+		mock.On("Render", testCondensedTexts).Once().Return(testOutputtedText, nil)
+		return mock
+	}
+	noopTextCleanerFactory := func() *TextCleanerMock { return new(TextCleanerMock) }
+	noopLanguageDetectorFactory := func() *LanguageDetectorMock { return new(LanguageDetectorMock) }
+	noopTextCondenserFactory := func() *TextCondenserMock { return new(TextCondenserMock) }
+	noopOutputterFactory := func() *OutputterMock { return new(OutputterMock) }
+
+	tests := []extractTest{
 		{
-			name:            "Successful",
+			name:             "Successful",
+			inputImageBytes:  testImageBytes,
+			textExtractor:    okTextExtractorFactory,
+			textCleaner:      okTextCleanerFactory,
+			languageDetector: okLanguageDetectorFactory,
+			textCondenser:    okTextCondenserFactory,
+			outputter:        okOutputterFactory,
+			expectedOutput:   testOutputtedText,
+			expectedError:    nil,
+		},
+		{
+			name:            "Text Extraction Failed",
 			inputImageBytes: testImageBytes,
 			textExtractor: func() *TextExtractorMock {
 				mock := new(TextExtractorMock)
-				mock.On("ExtractText", testImageBytes).Return(testExtractedTextLines, nil)
+				mock.On("ExtractText", testImageBytes).Once().Return(nil, errors.New("text extraction failed"))
 				return mock
 			},
+			textCleaner:      noopTextCleanerFactory,
+			languageDetector: noopLanguageDetectorFactory,
+			textCondenser:    noopTextCondenserFactory,
+			outputter:        noopOutputterFactory,
+			expectedOutput:   "",
+			expectedError:    errTextExtractor,
+		},
+		{
+			name:            "Text Cleaning Failed",
+			inputImageBytes: testImageBytes,
+			textExtractor:   okTextExtractorFactory,
 			textCleaner: func() *TextCleanerMock {
 				mock := new(TextCleanerMock)
-				mock.On("CleanText", testExtractedTextLines[0]).Return(testCleanedText, nil)
+				mock.On("CleanText", testExtractedTextLines[0]).Once().Return("", errors.New("text cleaning failure"))
 				return mock
 			},
+			languageDetector: noopLanguageDetectorFactory,
+			textCondenser:    noopTextCondenserFactory,
+			outputter:        noopOutputterFactory,
+			expectedOutput:   "",
+			expectedError:    errTextCleaner,
+		},
+		{
+			name:            "Language Detection Failed",
+			inputImageBytes: testImageBytes,
+			textExtractor:   okTextExtractorFactory,
+			textCleaner:     okTextCleanerFactory,
 			languageDetector: func() *LanguageDetectorMock {
 				mock := new(LanguageDetectorMock)
-				mock.On("DetectLanguage", []byte(testCleanedText)).Return(testDetectedLanguage, nil)
+				mock.On("DetectLanguage", []byte(testCleanedText)).Once().Return("", errors.New("language detection failed"))
 				return mock
 			},
+			textCondenser:  noopTextCondenserFactory,
+			outputter:      noopOutputterFactory,
+			expectedOutput: "",
+			expectedError:  errLanguageDetector,
+		},
+		{
+			name:             "Text Condensation Failed",
+			inputImageBytes:  testImageBytes,
+			textExtractor:    okTextExtractorFactory,
+			textCleaner:      okTextCleanerFactory,
+			languageDetector: okLanguageDetectorFactory,
 			textCondenser: func() *TextCondenserMock {
 				mock := new(TextCondenserMock)
-				mock.On("Condense", testPreCondensedTexts).Return(testCondensedTexts, nil)
+				mock.On("Condense", testPreCondensedTexts).Once().Return(nil, errors.New("text condensation failed"))
 				return mock
 			},
+			outputter:      noopOutputterFactory,
+			expectedOutput: "",
+			expectedError:  errTextCondenser,
+		},
+		{
+			name:             "Outputter Failed",
+			inputImageBytes:  testImageBytes,
+			textExtractor:    okTextExtractorFactory,
+			textCleaner:      okTextCleanerFactory,
+			languageDetector: okLanguageDetectorFactory,
+			textCondenser:    okTextCondenserFactory,
 			outputter: func() *OutputterMock {
 				mock := new(OutputterMock)
-				mock.On("Render", testCondensedTexts).Return(testOutputtedText, nil)
+				mock.On("Render", testCondensedTexts).Once().Return("", errors.New("outputter failed"))
 				return mock
 			},
-			expectedError: nil,
+			expectedOutput: "",
+			expectedError:  errOutputter,
 		},
 	}
 
@@ -121,15 +216,15 @@ func TestLanguageDetector(t *testing.T) {
 				Outputter:        outputterMock,
 			}
 
-			err := extractorAction.Extract(test.inputImageBytes)
+			actualOutput, actualErr := extractorAction.Extract(test.inputImageBytes)
+			assert.ErrorIs(t, actualErr, test.expectedError)
+			assert.Equal(t, test.expectedOutput, actualOutput)
 
 			textExtractorMock.AssertExpectations(t)
 			languageDetectorMock.AssertExpectations(t)
 			textCleanerMock.AssertExpectations(t)
 			textCondenserMock.AssertExpectations(t)
 			outputterMock.AssertExpectations(t)
-
-			assert.ErrorIs(t, err, test.expectedError)
 		})
 	}
 }

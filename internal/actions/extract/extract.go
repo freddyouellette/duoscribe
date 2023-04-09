@@ -1,6 +1,7 @@
 package extract
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/freddyouellette/duolingo-text-extractor/internal/models"
@@ -40,26 +41,26 @@ type Action struct {
 	Outputter        Outputter
 }
 
-const (
-	errTextExtractor    = "extracting text from image"
-	errTextCleaner      = "cleaning text"
-	errLanguageDetector = "detecting language"
-	errTextCondenser    = "condensing text"
-	errOutputter        = "outputting text"
+var (
+	errTextExtractor    = errors.New("extracting text from image")
+	errTextCleaner      = errors.New("cleaning text")
+	errLanguageDetector = errors.New("detecting language")
+	errTextCondenser    = errors.New("condensing text")
+	errOutputter        = errors.New("outputting text")
 )
 
 // Extract transcribes text from an image and outputs the result to the console.
-func (a *Action) Extract(imageBytes []byte) error {
+func (a *Action) Extract(imageBytes []byte) (string, error) {
 	lines, err := a.TextExtractor.ExtractText(imageBytes)
 	if err != nil {
-		return fmt.Errorf("%s: %w", errTextExtractor, err)
+		return "", fmt.Errorf("%w: %s", errTextExtractor, err)
 	}
 
 	var texts []models.Text
 	for _, line := range lines {
 		line, err := a.TextCleaner.CleanText(line)
 		if err != nil {
-			return fmt.Errorf("%s: %w", errTextCleaner, err)
+			return "", fmt.Errorf("%w: %s", errTextCleaner, err)
 		}
 		if line == "" {
 			continue
@@ -67,7 +68,7 @@ func (a *Action) Extract(imageBytes []byte) error {
 
 		language, err := a.LanguageDetector.DetectLanguage([]byte(line))
 		if err != nil {
-			return fmt.Errorf("%s: %w", errLanguageDetector, err)
+			return "", fmt.Errorf("%w: %s", errLanguageDetector, err)
 		}
 
 		texts = append(texts, models.Text{
@@ -78,15 +79,13 @@ func (a *Action) Extract(imageBytes []byte) error {
 
 	texts, err = a.TextCondenser.Condense(texts)
 	if err != nil {
-		return fmt.Errorf("%s: %w", errTextCondenser, err)
+		return "", fmt.Errorf("%w: %s", errTextCondenser, err)
 	}
 
 	out, err := a.Outputter.Render(texts)
 	if err != nil {
-		return fmt.Errorf("%s: %w", errOutputter, err)
+		return "", fmt.Errorf("%w: %s", errOutputter, err)
 	}
 
-	fmt.Print(out)
-
-	return nil
+	return out, nil
 }
