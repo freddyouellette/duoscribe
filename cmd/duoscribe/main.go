@@ -60,9 +60,10 @@ func main() {
 		Outputter:        outputter,
 	}
 
-	err = action.Extract(fileBytes)
+	output, err := action.Extract(fileBytes)
 	if err != nil {
 		os.Stderr.WriteString(err.Error())
 		os.Exit(1)
 	}
+	fmt.Print(output)
 }
