@@ -38,14 +38,14 @@ func TestIntegration(t *testing.T) {
 			name:               "Invalid Path",
 			args:               []string{"../../test/invalid_path.png"},
 			env:                nil,
-			expectedErrorRegex: `File .* cannot be read\.`,
+			expectedErrorRegex: `File .*? cannot be read\.`,
 			expectedOutput:     "",
 		},
 		{
 			name:               "Invalid AWS",
 			args:               []string{"../../test/integration.png"},
 			env:                []string{"AWS_ACCESS_KEY_ID=xxxxx"},
-			expectedErrorRegex: `.* The security token included in the request is invalid\.`,
+			expectedErrorRegex: `The security token included in the request is invalid\.`,
 			expectedOutput:     "",
 		},
 	}
@@ -60,11 +60,12 @@ func TestIntegration(t *testing.T) {
 			cmd.Stderr = &errOut
 
 			err := cmd.Run()
-			if err != nil {
-				assert.Regexp(t, regexp.MustCompile(test.expectedErrorRegex), errOut.String())
+			if test.expectedErrorRegex != "" {
+				assert.Regexp(t, regexp.MustCompile(test.expectedErrorRegex), errOut.String(), err)
 			} else {
-				assert.Equal(t, test.expectedOutput, out.String())
+				assert.NoError(t, err)
 			}
+			assert.Equal(t, test.expectedOutput, out.String())
 		})
 	}
 }
