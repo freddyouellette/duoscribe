@@ -9,6 +9,10 @@ import (
 // TextOutputter can output an array of Texts in a simple text format.
 type TextOutputter struct{}
 
+func NewTextOutputter() *TextOutputter {
+	return &TextOutputter{}
+}
+
 // Render returns the Texts in a simple format with newlines, without the language.
 func (o *TextOutputter) Render(output []models.Text) (string, error) {
 	outputString := ""

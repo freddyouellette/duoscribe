@@ -37,7 +37,7 @@ func TestTextCleaning(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.Name, func(t *testing.T) {
-			textCleaner := new(TextCleaner)
+			textCleaner := NewTextCleaner()
 			actualOutput, err := textCleaner.CleanText(test.Input)
 
 			if test.ExpectedError != nil {

@@ -1,7 +1,6 @@
 package output_formatting
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/freddyouellette/duolingo-text-extractor/internal/models"
@@ -52,11 +51,10 @@ func TestTextOutputter(t *testing.T) {
 		},
 	}
 
-	TextOutputter := new(TextOutputter)
-
-	for i, test := range tests {
-		t.Run(fmt.Sprintf("Text Outputter Test %d: %s", i, test.name), func(t *testing.T) {
-			thisOutput, err := TextOutputter.Render(test.input)
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			textOutputter := NewTextOutputter()
+			thisOutput, err := textOutputter.Render(test.input)
 			assert.NoError(t, err)
 			assert.Equal(t, test.output, thisOutput)
 		})
