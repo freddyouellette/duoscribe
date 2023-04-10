@@ -11,6 +11,7 @@
 	},
 	"extensions": [
 		"golang.Go",
-		"eamodio.gitlens"
+		"eamodio.gitlens",
+		"soren.go-coverage-viewer"
 	]
 }

@@ -116,7 +116,7 @@ func TestRekognitionExtractFromFile(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.Name, func(t *testing.T) {
-			textCondenser := new(TextCondenser)
+			textCondenser := NewTextCondenser()
 			actualOutput, err := textCondenser.Condense(test.Input)
 
 			if test.ExpectedError != nil {
