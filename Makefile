@@ -34,4 +34,7 @@ coverage:
 		echo "Test Coverage $$COVERAGE% (OK)";\
 	fi
 
+check-vulns:
+	govulncheck ./...
+
 check-pipeline: build test lint ci-lint coverage
