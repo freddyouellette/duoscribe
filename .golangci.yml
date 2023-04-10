@@ -10,7 +10,12 @@ linters:
     - typecheck # Like the front-end of a Go compiler, parses and type-checks Go code
     - unused # Checks Go code for unused constants, variables, functions and types
     - godox # Tool for detection of FIXME, TODO and other comment keywords
-    - gocyclo # Cyclomatic complexity is a code quality metric which can be used to identify code that needs refactoring. It measures the number of linearly independent paths through a function's source code.
+    - gocyclo # checks function and package cyclomatic complexity
+    - whitespace # Checks for unnecessary newlines at the start and end of functions
+
+linters-settings:
+  gocyclo:
+    min-complexity: 10
 
 issues:
   include:
