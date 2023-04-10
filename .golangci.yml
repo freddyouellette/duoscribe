@@ -19,5 +19,4 @@ issues:
   exclude:
     - "var-naming: don't use an underscore in package name"
     - "exported: exported function New.+ should have comment or be unexported"
-    - "var-naming: var .*(?i)json(?-i).* should be .*(?i)json(?-i).*"
-    - "var-naming: type .*(?i)json(?-i).* should be .*(?i)json(?-i).*"
+    - "var-naming: (var|type|struct field|func) .*?(?i)json(?-i).*? should be .*?(?i)json(?-i).*?"

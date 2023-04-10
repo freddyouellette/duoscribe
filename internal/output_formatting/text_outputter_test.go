@@ -51,11 +51,10 @@ func TestTextOutputter(t *testing.T) {
 		},
 	}
 
-	TextOutputter := new(TextOutputter)
-
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			thisOutput, err := TextOutputter.Render(test.input)
+			textOutputter := NewTextOutputter()
+			thisOutput, err := textOutputter.Render(test.input)
 			assert.NoError(t, err)
 			assert.Equal(t, test.output, thisOutput)
 		})

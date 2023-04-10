@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -47,9 +48,9 @@ func main() {
 
 	var outputter extract.Outputter
 	if wantJson {
-		outputter = &output_formatting.JsonOutputter{}
+		outputter = output_formatting.NewJsonOutputter(json.Marshal)
 	} else {
-		outputter = &output_formatting.TextOutputter{}
+		outputter = output_formatting.NewTextOutputter()
 	}
 
 	action := extract.Action{
