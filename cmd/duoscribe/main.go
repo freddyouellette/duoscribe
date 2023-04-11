@@ -14,7 +14,7 @@ import (
 	"github.com/freddyouellette/duolingo-text-extractor/internal/output_formatting"
 	"github.com/freddyouellette/duolingo-text-extractor/internal/text_cleaning"
 	"github.com/freddyouellette/duolingo-text-extractor/internal/text_condensing"
-	"github.com/freddyouellette/duolingo-text-extractor/pkg/language_detection"
+	lingua_service "github.com/freddyouellette/duolingo-text-extractor/pkg/language_detection/lingua"
 	"github.com/freddyouellette/duolingo-text-extractor/pkg/text_extraction"
 	"github.com/pemistahl/lingua-go"
 )
@@ -41,8 +41,8 @@ func main() {
 
 	awsRekognitionService := rekognition.NewFromConfig(awsConfig)
 	textExtractor := text_extraction.NewAwsRekognition(awsRekognitionService)
-	linguaService := lingua.NewLanguageDetectorBuilder().FromAllLanguages().Build()
-	languageDetector := language_detection.NewLinguaService(linguaService)
+	linguaExternalService := lingua.NewLanguageDetectorBuilder().FromAllLanguages().Build()
+	languageDetector := lingua_service.NewLinguaService(linguaExternalService)
 	textCleaner := text_cleaning.NewTextCleaner()
 	textCondenser := text_condensing.NewTextCondenser()
 

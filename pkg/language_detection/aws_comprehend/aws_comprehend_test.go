@@ -1,4 +1,4 @@
-package language_detection
+package aws_comprehend
 
 import (
 	"context"
@@ -11,11 +11,11 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type AwsComprehendServiceMock struct {
+type ExternalServiceMock struct {
 	mock.Mock
 }
 
-func (m *AwsComprehendServiceMock) DetectDominantLanguage(ctx context.Context, params *comprehend.DetectDominantLanguageInput, optFns ...func(*comprehend.Options)) (*comprehend.DetectDominantLanguageOutput, error) {
+func (m *ExternalServiceMock) DetectDominantLanguage(ctx context.Context, params *comprehend.DetectDominantLanguageInput, optFns ...func(*comprehend.Options)) (*comprehend.DetectDominantLanguageOutput, error) {
 	args := m.MethodCalled("DetectDominantLanguage", ctx, params, optFns)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -25,7 +25,7 @@ func (m *AwsComprehendServiceMock) DetectDominantLanguage(ctx context.Context, p
 
 type languageDetectorTest struct {
 	name                        string
-	awsComprehendServiceFactory func() *AwsComprehendServiceMock
+	awsComprehendServiceFactory func() *ExternalServiceMock
 	inputString                 string
 	expectedOutput              string
 	expectedErr                 error
@@ -42,8 +42,8 @@ func TestLanguageDetector(t *testing.T) {
 	tests := []languageDetectorTest{
 		{
 			name: "Happy Path",
-			awsComprehendServiceFactory: func() *AwsComprehendServiceMock {
-				m := new(AwsComprehendServiceMock)
+			awsComprehendServiceFactory: func() *ExternalServiceMock {
+				m := new(ExternalServiceMock)
 				output := &comprehend.DetectDominantLanguageOutput{
 					Languages: []types.DominantLanguage{
 						{LanguageCode: &okOutput},
@@ -58,8 +58,8 @@ func TestLanguageDetector(t *testing.T) {
 		},
 		{
 			name: "AWS Failure",
-			awsComprehendServiceFactory: func() *AwsComprehendServiceMock {
-				m := new(AwsComprehendServiceMock)
+			awsComprehendServiceFactory: func() *ExternalServiceMock {
+				m := new(ExternalServiceMock)
 				m.On("DetectDominantLanguage", mock.Anything, okComprehendInput, mock.Anything).Once().Return(nil, errors.New("aws failure"))
 				return m
 			},

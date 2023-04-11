@@ -1,4 +1,4 @@
-package language_detection
+package aws_comprehend
 
 import (
 	"context"
@@ -8,18 +8,18 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/comprehend"
 )
 
-// AwsComprehendService will call the AWS service to detect the language of a string.
-type AwsComprehendService interface {
+// ExternalService will call the AWS service to detect the language of a string.
+type ExternalService interface {
 	DetectDominantLanguage(ctx context.Context, params *comprehend.DetectDominantLanguageInput, optFns ...func(*comprehend.Options)) (*comprehend.DetectDominantLanguageOutput, error)
 }
 
-// AwsComprehend can detect the language of a string using an AWS service.
-type AwsComprehend struct {
-	awsComprehendService AwsComprehendService
+// Service can detect the language of a string using an AWS service.
+type Service struct {
+	awsComprehendService ExternalService
 }
 
-func NewAwsComprehend(awsComprehendService AwsComprehendService) *AwsComprehend {
-	return &AwsComprehend{
+func NewAwsComprehend(awsComprehendService ExternalService) *Service {
+	return &Service{
 		awsComprehendService: awsComprehendService,
 	}
 }
@@ -28,7 +28,7 @@ var errAwsComprehendFailure = errors.New("aws comprehend failure")
 
 // DetectLanguage will determine the language of a string and return it.
 // The language will be in short form, e.g. "en", "it", "es"
-func (s *AwsComprehend) DetectLanguage(inputBytes []byte) (string, error) {
+func (s *Service) DetectLanguage(inputBytes []byte) (string, error) {
 	inputString := string(inputBytes)
 	input := &comprehend.DetectDominantLanguageInput{
 		Text: &inputString,

@@ -23,7 +23,7 @@ Can you repeat it please?
 ```
 
 ## How to Use
-> WARNING: This program uses AWS Rekognition and AWS Comprehend to extract text from images and get the language. You must have an AWS account set up with an access key. The Free Tier of AWS allows 5000 processed images per month on Rekognition, and $0.0001 per unit on Comprehend.
+> WARNING: This program uses AWS Rekognition to extract text from images. You must have an AWS account set up with an access key. The Free Tier of AWS allows 5000 processed images per month on Rekognition.
 1. Build the program
 ```
 make build

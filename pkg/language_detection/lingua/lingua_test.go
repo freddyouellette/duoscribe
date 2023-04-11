@@ -1,4 +1,4 @@
-package language_detection
+package lingua
 
 import (
 	"testing"
