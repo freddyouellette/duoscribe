@@ -9,7 +9,6 @@ import (
 	"os"
 
 	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/comprehend"
 	"github.com/aws/aws-sdk-go-v2/service/rekognition"
 	"github.com/freddyouellette/duolingo-text-extractor/internal/actions/extract"
 	"github.com/freddyouellette/duolingo-text-extractor/internal/output_formatting"
@@ -17,6 +16,7 @@ import (
 	"github.com/freddyouellette/duolingo-text-extractor/internal/text_condensing"
 	"github.com/freddyouellette/duolingo-text-extractor/pkg/language_detection"
 	"github.com/freddyouellette/duolingo-text-extractor/pkg/text_extraction"
+	"github.com/pemistahl/lingua-go"
 )
 
 func main() {
@@ -38,11 +38,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("AWS session failed to start. Please check your settings, an AWS environment is required to use this tool: %s", err)
 	}
-	awsRekognitionService := rekognition.NewFromConfig(awsConfig)
-	awsComprehendService := comprehend.NewFromConfig(awsConfig)
 
+	awsRekognitionService := rekognition.NewFromConfig(awsConfig)
 	textExtractor := text_extraction.NewAwsRekognition(awsRekognitionService)
-	languageDetector := language_detection.NewAwsComprehend(awsComprehendService)
+	linguaService := lingua.NewLanguageDetectorBuilder().FromAllLanguages().Build()
+	languageDetector := language_detection.NewLinguaService(linguaService)
 	textCleaner := text_cleaning.NewTextCleaner()
 	textCondenser := text_condensing.NewTextCondenser()
 
