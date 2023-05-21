@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -19,6 +19,11 @@ import (
 	"github.com/pemistahl/lingua-go"
 )
 
+var (
+	errFileCannotBeRead = errors.New("File cannot be read")
+	errAwsConfig        = errors.New("AWS session failed to start. Please check your settings, an AWS environment is required to use this tool")
+)
+
 func main() {
 	var wantJson bool
 	for _, arg := range os.Args {
@@ -30,13 +35,14 @@ func main() {
 	filePath := os.Args[len(os.Args)-1]
 	fileBytes, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		os.Stderr.WriteString(fmt.Sprintf("File %s cannot be read.", filePath))
+		os.Stderr.WriteString(fmt.Errorf("%w: %s", errFileCannotBeRead, filePath).Error())
 		os.Exit(1)
 	}
 
 	awsConfig, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
-		log.Fatalf("AWS session failed to start. Please check your settings, an AWS environment is required to use this tool: %s", err)
+		os.Stderr.WriteString(fmt.Errorf("%w: %s", errAwsConfig, err).Error())
+		os.Exit(1)
 	}
 
 	awsRekognitionService := rekognition.NewFromConfig(awsConfig)
