@@ -20,9 +20,12 @@ import (
 )
 
 var (
-	ErrNoArgs           = errors.New("at least one arg is required: the image file to be read")
+	// ErrNoArgs is printed if there are no args passed to the command
+	ErrNoArgs = errors.New("at least one arg is required: the image file to be read")
+	// ErrFileCannotBeRead is printed if the passed file cannot be read or doesn't exist
 	ErrFileCannotBeRead = errors.New("file cannot be read")
-	ErrAwsConfig        = errors.New("AWS session failed to start. Please check your settings, an AWS environment is required to use this tool")
+	// ErrAwsConfig is printed if the local AWS config is not set up correctly
+	ErrAwsConfig = errors.New("AWS session failed to start. Please check your settings, an AWS environment is required to use this tool")
 )
 
 func main() {
