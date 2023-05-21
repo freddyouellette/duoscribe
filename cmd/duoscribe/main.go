@@ -20,8 +20,9 @@ import (
 )
 
 var (
-	errFileCannotBeRead = errors.New("File cannot be read")
-	errAwsConfig        = errors.New("AWS session failed to start. Please check your settings, an AWS environment is required to use this tool")
+	ErrNoArgs           = errors.New("at least one arg is required: the image file to be read")
+	ErrFileCannotBeRead = errors.New("file cannot be read")
+	ErrAwsConfig        = errors.New("AWS session failed to start. Please check your settings, an AWS environment is required to use this tool")
 )
 
 func main() {
@@ -32,16 +33,20 @@ func main() {
 		}
 	}
 
+	if len(os.Args) == 1 {
+		os.Stderr.WriteString(ErrNoArgs.Error())
+	}
+
 	filePath := os.Args[len(os.Args)-1]
 	fileBytes, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		os.Stderr.WriteString(fmt.Errorf("%w: %s", errFileCannotBeRead, filePath).Error())
+		os.Stderr.WriteString(fmt.Errorf("%w: %s", ErrFileCannotBeRead, filePath).Error())
 		os.Exit(1)
 	}
 
 	awsConfig, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
-		os.Stderr.WriteString(fmt.Errorf("%w: %s", errAwsConfig, err).Error())
+		os.Stderr.WriteString(fmt.Errorf("%w: %s", ErrAwsConfig, err).Error())
 		os.Exit(1)
 	}
 

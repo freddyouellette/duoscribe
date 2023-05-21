@@ -35,10 +35,17 @@ func TestIntegration(t *testing.T) {
 			expectedOutput:     "[{\"Language\":\"en\",\"Text\":\"This automobile is like new.\"},{\"Language\":\"it\",\"Text\":\"Quest'automobile è come nuova.\"}]",
 		},
 		{
+			name:               "No Args",
+			args:               []string{},
+			env:                nil,
+			expectedErrorRegex: "at least one arg is required: the image file to be read",
+			expectedOutput:     "",
+		},
+		{
 			name:               "Invalid Path",
 			args:               []string{"../../test/invalid_path.png"},
 			env:                nil,
-			expectedErrorRegex: `File .*? cannot be read\.`,
+			expectedErrorRegex: "file cannot be read.*",
 			expectedOutput:     "",
 		},
 		{
