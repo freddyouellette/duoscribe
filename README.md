@@ -2,7 +2,7 @@
 Extract text from Duolingo exported exercise images
 
 ### Input Image
-![Duolingo Exported Exercise Image](https://raw.githubusercontent.com/freddyouellette/duolingo-transcriber/master/test/2_lines.jpg)
+![Duolingo Exported Exercise Image](https://raw.githubusercontent.com/freddyouellette/duoscribe/master/test/2_lines.jpg)
 ### Exported Text
 ```
 Lo può ripetere per favore?
@@ -42,8 +42,8 @@ make build
 * [Class UML Diagram](https://mermaid.live/edit#pako:eNrNVk1P3DAQ_SuWT4vE9gdEq5VQKdIiJCTojXBwkyFYbOytM2lZwf732nHS2ItjZ1EPzSWJ572ZNx928kYLWQLNaLFlTXPJWaVYnYtcEH11a6RmXJC3Ye1gb93icrkm315RsQK_wys2d_CzhQZ9egBgvJH-2ty2uGvxSqqaIYK6B_WLF3ClKVLtiYxZRy99kMUZaVBxUXlaQwqM9I1r-CrrmonS154Q56Rx3UhhwSNMqwnzR5oJfSItldRtumJT3Kmwbkn-34okmrV6Xy5Jojhe7wPT4eY3jtzDo8H4WkLkTkFy5hJhec0qMMYeJ4ckyGbK4hf3homq1chLQHDpEdvMpEPKu5GMC5uiRQW5FTNAt0Tm_egkMNfg6-Mh4bU9Lna12gg9OE-sgHUys0lz9reQXH65A1aCso21z6a6ViJBUxVf4cVvvWlfZCU4cikc9_rNCz8DeLKQaFp2wv-lvm4QfFysGEOPtB9Qgm3XcXJy5P1uJ-Gx7ZURu7Jw6jkMItn2JOvmKD-9J3YKnkGUnw4-9GWmqznIE_KZ425o9Aj80GfXFGrzFDX26fAbHEOGbVm_vrDHodkvP_Z4dD6FvoTWHrJMupxWYfsbDnM872EhIcunhYSc0XNagwbzUv9rdmd1TvEZashpph9Lpl5ymouDxrEW5f1eFDRD1cI5bXclQ-h_TWn2xLYNHP4A4wzVDQ)
 
 # Links
-* [Github Repository](https://github.com/freddyouellette/duolingo-transcriber)
-* [MIT License](https://github.com/freddyouellette/duolingo-transcriber/blob/master/LICENSE.md)
+* [Github Repository](https://github.com/freddyouellette/duoscribe)
+* [MIT License](https://github.com/freddyouellette/duoscribe/blob/master/LICENSE.md)
 
 ## Support Me
 [![Donate](https://img.shields.io/badge/Donate-fec133?logo=paypal)](https://www.paypal.com/donate/?hosted_button_id=3PJ9XD363CC5E)
